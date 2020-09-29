@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	"github.com/hadv/generator"
+	"github.com/beinan/fastid"
 	"github.com/hadv/mysql-db-index-benchmark/core/model"
 	"github.com/hadv/mysql-db-index-benchmark/core/repo"
 	"github.com/pkg/errors"
@@ -39,10 +39,8 @@ func (a *Account) Register(ctx context.Context, user *model.User) (*model.User, 
 	if user.Password != user.ConfirmPassword {
 		return nil, errors.New("password and confirm password are not matched")
 	}
-	generator := generator.New(20, "usr", "_")
-	id, _ := generator.Get()
 	usr := &model.User{
-		ID:        id,
+		ID:        fastid.CommonConfig.GenInt64ID(),
 		Firstname: user.Firstname,
 		Lastname:  user.Lastname,
 		Email:     user.Email,

@@ -6,9 +6,10 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"time"
 
+	"github.com/beinan/fastid"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/hadv/generator"
 	"github.com/hadv/mysql-db-index-benchmark/core/model"
 	"github.com/hadv/mysql-db-index-benchmark/core/repo"
 	"github.com/hadv/mysql-db-index-benchmark/core/service"
@@ -41,6 +42,7 @@ var commandBulkInsert = cli.Command{
 	Description: "",
 	Flags:       []cli.Flag{},
 	Action: func(ctx *cli.Context) error {
+		start := time.Now()
 		viper.AutomaticEnv()
 		dbURL := viper.GetString("DB_URL")
 		fmt.Println(dbURL)
@@ -51,11 +53,9 @@ var commandBulkInsert = cli.Command{
 		}
 		account := service.NewAccount(repo.NewUser(db))
 		users := make([]*model.User, 0)
-		for i := 0; i < 1000000; i++ {
-			generator := generator.New(20, "usr", "_")
-			id, _ := generator.Get()
+		for i := 0; i < 10000000; i++ {
 			user := &model.User{
-				ID:              id,
+				ID:              fastid.CommonConfig.GenInt64ID(),
 				Firstname:       "Ha" + strconv.Itoa(i),
 				Lastname:        "Dang" + strconv.Itoa(i),
 				Email:           "dvietha" + strconv.Itoa(i) + "@gmail.com",
@@ -69,6 +69,8 @@ var commandBulkInsert = cli.Command{
 		if err := account.BulkInsert(context.Background(), users, 10000); err != nil {
 			return err
 		}
+		elapsed := time.Since(start)
+		log.Printf("bulk insert took %s", elapsed)
 		return nil
 	},
 }

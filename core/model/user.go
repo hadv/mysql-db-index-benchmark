@@ -4,7 +4,7 @@ import "time"
 
 // User user data model
 type User struct {
-	ID                string    `db:"id" json:"id"`
+	ID                int64     `db:"id" json:"id"`
 	Firstname         string    `db:"firstname" json:"firstname"`
 	Lastname          string    `db:"lastname" json:"lastname"`
 	Email             string    `db:"email" json:"email"`
